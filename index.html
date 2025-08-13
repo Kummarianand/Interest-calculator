@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interest Calculator</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+        color: #fff;
+        margin: 0;
+        padding: 0;
+    }
+    .page {
+        display: none;
+        height: 100vh;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+    }
+    .page.show {
+        display: flex;
+        opacity: 1;
+    }
+    .welcome {
+        text-align: center;
+        padding: 20px;
+    }
+    .welcome h1 {
+        font-size: 38px;
+        margin-bottom: 10px;
+    }
+    .welcome p {
+        font-size: 18px;
+        margin-bottom: 30px;
+    }
+    .btn {
+        background: #ff9800;
+        color: white;
+        padding: 12px 25px;
+        font-size: 18px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .btn:hover {
+        background: #e68900;
+    }
+    .container {
+        max-width: 500px;
+        background: rgba(255, 255, 255, 0.1);
+        padding: 30px;
+        border-radius: 15px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+    h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 26px;
+    }
+    label {
+        font-weight: bold;
+    }
+    input, select, button {
+        width: 100%;
+        padding: 10px;
+        margin: 8px 0 15px 0;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+    }
+    input, select {
+        background: rgba(255, 255, 255, 0.9);
+        color: #333;
+    }
+    .result {
+        margin-top: 20px;
+        background: rgba(0,0,0,0.2);
+        padding: 15px;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 18px;
+    }
+    .pay-box {
+        background: rgba(255,255,255,0.1);
+        padding: 20px;
+        border-radius: 10px;
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<!-- Welcome Page -->
+<div class="page show" id="welcomePage">
+    <div class="welcome">
+        <h1>Welcome to Interest Calculator</h1>
+        <p>Calculate Simple & Compound Interest quickly and easily.</p>
+        <button class="btn" onclick="goToCalculator()">Start</button>
+    </div>
+</div>
+
+<!-- Calculator Page -->
+<div class="page" id="calculatorPage">
+    <div class="container">
+        <h2>Interest Calculator</h2>
+
+        <label for="principal">Principal Amount (₹):</label>
+        <input type="number" id="principal" placeholder="Enter amount" required>
+
+        <label for="rate">Rate of Interest (% per year):</label>
+        <input type="number" id="rate" placeholder="Enter rate" required>
+
+        <label for="time">Time (years):</label>
+        <input type="number" id="time" placeholder="Enter time" required>
+
+        <label for="type">Select Interest Type:</label>
+        <select id="type">
+            <option value="simple">Simple Interest</option>
+            <option value="compound">Compound Interest</option>
+        </select>
+
+        <button class="btn" onclick="calculateInterest()">Calculate</button>
+
+        <div class="result" id="result"></div>
+    </div>
+</div>
+
+<!-- Payment Page -->
+<div class="page" id="paymentPage">
+    <div class="pay-box" id="payMessage"></div>
+</div>
+
+<script>
+function goToCalculator() {
+    changePage("welcomePage", "calculatorPage");
+}
+
+function calculateInterest() {
+    const principal = parseFloat(document.getElementById('principal').value);
+    const rate = parseFloat(document.getElementById('rate').value);
+    const time = parseFloat(document.getElementById('time').value);
+    const type = document.getElementById('type').value;
+    const resultDiv = document.getElementById('result');
+
+    if (isNaN(principal) || isNaN(rate) || isNaN(time) || principal <= 0 || rate <= 0 || time <= 0) {
+        resultDiv.innerHTML = "⚠ Please enter valid positive numbers.";
+        return;
+    }
+
+    let total;
+    if (type === "simple") {
+        let interest = (principal * rate * time) / 100;
+        total = principal + interest;
+        resultDiv.innerHTML = ` Simple Interest: ₹${interest.toFixed(2)}<br> Total Amount: ₹${total.toFixed(2)}`;
+    } else {
+        total = principal * Math.pow((1 + rate / 100), time);
+        let interest = total - principal;
+        resultDiv.innerHTML = ` Compound Interest: ₹${interest.toFixed(2)}<br> Total Amount: ₹${total.toFixed(2)}`;
+    }
+
+    // Redirect to payment page after 2 seconds
+    setTimeout(() => {
+        document.getElementById("payMessage").innerHTML = ` Total Amount To Pay <span style="color:yellow;">₹${total.toFixed(2)}</span>`;
+        changePage("calculatorPage", "paymentPage");
+    }, 2000);
+}
+
+function changePage(from, to) {
+    document.getElementById(from).classList.remove("show");
+    setTimeout(() => {
+        document.getElementById(from).style.display = "none";
+        document.getElementById(to).classList.add("show");
+    }, 500);
+}
+</script>
+
+</body>
+</html>
